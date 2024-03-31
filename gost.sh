@@ -74,7 +74,7 @@ function check_new_ver() {
 function check_file() {
   if test ! -d "/usr/lib/systemd/system/"; then
     mkdir /usr/lib/systemd/system
-    chmod -R 777 /usr/lib/systemd/system
+    chmod -R 644 /usr/lib/systemd/system
   fi
 }
 function check_nor_file() {
@@ -97,22 +97,22 @@ function Install_ct() {
   [[ -z ${addyn} ]] && addyn="n"
   if [[ ${addyn} == [Yy] ]]; then
     rm -rf gost-linux-"$bit"-"$ct_new_ver".gz
-    wget --no-check-certificate https://gotunnel.oss-cn-shenzhen.aliyuncs.com/gost-linux-"$bit"-"$ct_new_ver".gz
+    wget --no-check-certificate https://gh.joshua.su/https://github.com/ginuerzh/gost/releases/download/v"$ct_new_ver"/gost-linux-"$bit"-"$ct_new_ver".gz
     gunzip gost-linux-"$bit"-"$ct_new_ver".gz
     mv gost-linux-"$bit"-"$ct_new_ver" gost
     mv gost /usr/bin/gost
-    chmod -R 777 /usr/bin/gost
-    wget --no-check-certificate https://gotunnel.oss-cn-shenzhen.aliyuncs.com/gost.service && chmod -R 777 gost.service && mv gost.service /usr/lib/systemd/system
-    mkdir /etc/gost && wget --no-check-certificate https://gotunnel.oss-cn-shenzhen.aliyuncs.com/config.json && mv config.json /etc/gost && chmod -R 777 /etc/gost
+    chmod -R 755 /usr/bin/gost
+    wget --no-check-certificate https://gh.joshua.su/https://raw.githubusercontent.com/KANIKIG/Multi-EasyGost/master/gost.service && chmod -R 644 gost.service && mv gost.service /usr/lib/systemd/system
+    mkdir /etc/gost && wget --no-check-certificate https://gh.joshua.su/https://raw.githubusercontent.com/KANIKIG/Multi-EasyGost/master/config.json && mv config.json /etc/gost && chmod -R 755 /etc/gost
   else
     rm -rf gost-linux-"$bit"-"$ct_new_ver".gz
     wget --no-check-certificate https://github.com/ginuerzh/gost/releases/download/v"$ct_new_ver"/gost-linux-"$bit"-"$ct_new_ver".gz
     gunzip gost-linux-"$bit"-"$ct_new_ver".gz
     mv gost-linux-"$bit"-"$ct_new_ver" gost
     mv gost /usr/bin/gost
-    chmod -R 777 /usr/bin/gost
-    wget --no-check-certificate https://raw.githubusercontent.com/KANIKIG/Multi-EasyGost/master/gost.service && chmod -R 777 gost.service && mv gost.service /usr/lib/systemd/system
-    mkdir /etc/gost && wget --no-check-certificate https://raw.githubusercontent.com/KANIKIG/Multi-EasyGost/master/config.json && mv config.json /etc/gost && chmod -R 777 /etc/gost
+    chmod -R 755 /usr/bin/gost
+    wget --no-check-certificate https://raw.githubusercontent.com/KANIKIG/Multi-EasyGost/master/gost.service && chmod -R 644 gost.service && mv gost.service /usr/lib/systemd/system
+    mkdir /etc/gost && wget --no-check-certificate https://raw.githubusercontent.com/KANIKIG/Multi-EasyGost/master/config.json && mv config.json /etc/gost && chmod -R 755 /etc/gost
   fi
 
   systemctl enable gost && systemctl restart gost
@@ -595,8 +595,8 @@ function method() {
       echo "        \"tcp://:$s_port?ip=/root/$d_ip.txt&strategy=$d_port\",
         \"udp://:$s_port?ip=/root/$d_ip.txt&strategy=$d_port\"" >>$gost_conf_path
     elif [ "$is_encrypt" == "encrypttls" ]; then
-      echo "        \"tcp://:$s_port\",
-        \"udp://:$s_port\"
+      echo "        \"tcp://127.0.0.1:$s_port\",
+        \"udp://127.0.0.1:$s_port\"
     ],
     \"ChainNodes\": [
         \"relay+tls://$d_ip:$d_port\"" >>$gost_conf_path
@@ -607,8 +607,8 @@ function method() {
 	\"ChainNodes\": [
     	\"relay+ws://$d_ip:$d_port\"" >>$gost_conf_path
     elif [ "$is_encrypt" == "encryptwss" ]; then
-      echo "        \"tcp://:$s_port\",
-		  \"udp://:$s_port\"
+      echo "        \"tcp://127.0.0.1:$s_port\",
+		  \"udp://127.0.0.1:$s_port\"
 	],
 	\"ChainNodes\": [
 		\"relay+wss://$d_ip:$d_port\"" >>$gost_conf_path
@@ -659,7 +659,7 @@ function method() {
     elif [ "$is_encrypt" == "ss" ]; then
       echo "        \"ss://$d_ip:$s_port@:$d_port\"" >>$gost_conf_path
     elif [ "$is_encrypt" == "socks" ]; then
-      echo "        \"socks5://$d_ip:$s_port@:$d_port\"" >>$gost_conf_path
+      echo "        \"socks5://$d_ip:$s_port@127.0.0.1:$d_port\"" >>$gost_conf_path
     elif [ "$is_encrypt" == "http" ]; then
       echo "        \"http://$d_ip:$s_port@:$d_port\"" >>$gost_conf_path
     else
@@ -676,8 +676,8 @@ function method() {
       echo "                \"tcp://:$s_port/$d_ip?host=$d_port\",
                 \"udp://:$s_port/$d_ip?host=$d_port\"" >>$gost_conf_path
     elif [ "$is_encrypt" == "encrypttls" ]; then
-      echo "                \"tcp://:$s_port\",
-                \"udp://:$s_port\"
+      echo "                \"tcp://127.0.0.1:$s_port\",
+                \"udp://127.0.0.1:$s_port\"
             ],
             \"ChainNodes\": [
                 \"relay+tls://$d_ip:$d_port\"" >>$gost_conf_path
@@ -688,8 +688,8 @@ function method() {
 	        \"ChainNodes\": [
 	            \"relay+ws://$d_ip:$d_port\"" >>$gost_conf_path
     elif [ "$is_encrypt" == "encryptwss" ]; then
-      echo "                \"tcp://:$s_port\",
-		        \"udp://:$s_port\"
+      echo "                \"tcp://127.0.0.1:$s_port\",
+		        \"udp://127.0.0.1:$s_port\"
 		    ],
 		    \"ChainNodes\": [
 		        \"relay+wss://$d_ip:$d_port\"" >>$gost_conf_path
@@ -740,7 +740,7 @@ function method() {
     elif [ "$is_encrypt" == "ss" ]; then
       echo "        \"ss://$d_ip:$s_port@:$d_port\"" >>$gost_conf_path
     elif [ "$is_encrypt" == "socks" ]; then
-      echo "        \"socks5://$d_ip:$s_port@:$d_port\"" >>$gost_conf_path
+      echo "        \"socks5://$d_ip:$s_port@127.0.0.1:$d_port\"" >>$gost_conf_path
     elif [ "$is_encrypt" == "http" ]; then
       echo "        \"http://$d_ip:$s_port@:$d_port\"" >>$gost_conf_path
     else
